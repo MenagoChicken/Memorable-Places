@@ -15,19 +15,21 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    public static List<String> memorablePlacesList = new ArrayList<>();
+    public static List<LatLng> locations = new ArrayList<>();
+    public static ArrayAdapter<String> arrayAdapter;
+
     private Intent intent;
-    private List<String> memorablePlacesList;
     private ListView memorablePlacesListView;
-    private ArrayAdapter<String> arrayAdapter;
-    private List<LatLng> locations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        memorablePlacesList = new ArrayList<>();
         memorablePlacesList.add("Add new place");
+        locations.add(new LatLng(0, 0));
 
         memorablePlacesListView = findViewById(R.id.MemorblePlacesList);
 
