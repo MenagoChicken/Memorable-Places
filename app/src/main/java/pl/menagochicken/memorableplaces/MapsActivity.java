@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -161,7 +160,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
-        if (address == ""){
+        if (address == "") {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm yyyy.MM.dd");
             address += sdf.format(new Date());
         }
