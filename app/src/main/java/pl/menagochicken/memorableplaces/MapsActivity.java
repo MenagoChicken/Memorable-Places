@@ -3,6 +3,7 @@ package pl.menagochicken.memorableplaces;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -42,9 +44,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng userLocatiuon = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.clear();
 
-        if (title != "Your location") {
+        if (!title.equals("Your location")) {
             mMap.addMarker(new MarkerOptions().position(userLocatiuon).title(title)).showInfoWindow();
-
         }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocatiuon, 15));
@@ -74,6 +75,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
 
@@ -170,6 +172,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MainActivity.locations.add(latLng);
 
         MainActivity.arrayAdapter.notifyDataSetChanged();
+
+        SharedPreferences sharedPreferences = this.getSharedPreferences("pl.menagochicken.memorableplaces", Context.MODE_PRIVATE);
+
+        try {
+            ArrayList<String> latitude = new ArrayList<>();
+            ArrayList<String> longitude = new ArrayList<>();
+
+            for (LatLng cordinates : MainActivity.locations){
+                latitude.add(Double.toString(cordinates.latitude));
+                longitude.add(Double.toString(cordinates.longitude));
+            }
+
+            sharedPreferences.edit().putString("places", ObjectSerializer.serialize(MainActivity.memorablePlacesList)).apply();
+            sharedPreferences.edit().putString("latitudes", ObjectSerializer.serialize(latitude)).apply();
+            sharedPreferences.edit().putString("longitudes", ObjectSerializer.serialize(longitude)).apply();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Toast.makeText(this, "Location saved!", Toast.LENGTH_LONG).show();
     }
