@@ -1,6 +1,8 @@
 package pl.menagochicken.memorableplaces;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -78,5 +81,50 @@ public class MainActivity extends AppCompatActivity {
                                                            }
                                                        }
         );
+
+        memorablePlacesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                final int itemClicked = i;
+
+                new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Delete?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                memorablePlacesList.remove(itemClicked);
+                                locations.remove(itemClicked);
+                                arrayAdapter.notifyDataSetChanged();
+
+                                SharedPreferences sharedPreferences = getSharedPreferences("pl.menagochicken.memorableplaces", Context.MODE_PRIVATE);
+
+                                try {
+                                    ArrayList<String> latitude = new ArrayList<>();
+                                    ArrayList<String> longitude = new ArrayList<>();
+
+                                    for (LatLng cordinates : MainActivity.locations) {
+                                        latitude.add(Double.toString(cordinates.latitude));
+                                        longitude.add(Double.toString(cordinates.longitude));
+                                    }
+
+                                    sharedPreferences.edit().putString("places", ObjectSerializer.serialize(MainActivity.memorablePlacesList)).apply();
+                                    sharedPreferences.edit().putString("latitudes", ObjectSerializer.serialize(latitude)).apply();
+                                    sharedPreferences.edit().putString("longitudes", ObjectSerializer.serialize(longitude)).apply();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Toast.makeText(getApplicationContext(), "Location deleted", Toast.LENGTH_LONG).show();
+
+                            }
+                        }).setNegativeButton("No", null)
+                        .show();
+
+
+                return true;
+            }
+        });
     }
 }
